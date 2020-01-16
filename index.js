@@ -202,8 +202,52 @@ function generateHTML(data) {
             </style>
         </head>
         <body>
-          
-        </body>
+
+        <div class="wrapper">
+          <div class="photo-header">
+            <img src="${data.avatar_url}">
+            <h1>Hi!</h1>
+            <h2>My name is ${data.name}!</h2>
+            <h4>Currently @ ${data.location}</h4>
+            <div class="links-nav">
+              <a href="https://www.google.com/maps/place/${data.location}" class="nav-link">Location</a>
+              <a href="${data.html_url}" class="nav-link">${data.login}</a>
+              <a href="${data.blog}" class="nav-link">Website</a>
+            </div>
+          </div>
+          <main>
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <h2>${data.bio}</h2>
+                </div>
+              </div>
+      
+              <div class="row">
+                <div class="col card">
+                  <h2>Public Repos</h2>
+                  <h3>${data.public_repos}</h3>
+                </div>
+                <div class="col card">
+                  <h2>Followers</h2>
+                  <h3>${data.followers}</h3>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col card">
+                  <h2>GitHub Stars</h2>
+                  <h3>${data.stars}</h3>
+                </div>
+                <div class="col card">
+                  <h2>Following</h2>
+                  <h3>${data.following}</h3>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      
+      </body>
       </html>`
 }
 
@@ -215,11 +259,23 @@ async function init() {
 
         const queryUrl = `https://api.github.com/users/${username}`;
 
+        const queryUrl2 = `https://api.github.com/users/${username}/repos`;
+
+        const resRepos = await axios.get(queryUrl2)
+        
+        const repos = resRepos.data
+
+        let stars = 0;
+
+        for (repo of repos) {
+          stars += repo.stargazers_count
+        }
+        
         const res = await axios.get(queryUrl)
 
         const results = res.data
 
-        const data = {color, ...results}
+        const data = {stars, color, ...results}
 
         const html = generateHTML(data);
 
