@@ -4,58 +4,58 @@ const util = require("util");
 const axios = require("axios");
 
 const colors = {
-    green: {
-        wrapperBackground: "#E6E1C3",
-        headerBackground: "#C1C72C",
-        headerColor: "black",
-        photoBorderColor: "black"
-    },
-    blue: {
-        wrapperBackground: "#5F64D3",
-        headerBackground: "#26175A",
-        headerColor: "white",
-        photoBorderColor: "#73448C"
-    },
-    pink: {
-        wrapperBackground: "#879CDF",
-        headerBackground: "#FF8374",
-        headerColor: "white",
-        photoBorderColor: "#FEE24C"
-    },
-    red: {
-        wrapperBackground: "#DE9967",
-        headerBackground: "#870603",
-        headerColor: "white",
-        photoBorderColor: "white"
-    }
+  green: {
+    wrapperBackground: "#E6E1C3",
+    headerBackground: "#C1C72C",
+    headerColor: "black",
+    photoBorderColor: "black"
+  },
+  blue: {
+    wrapperBackground: "#5F64D3",
+    headerBackground: "#26175A",
+    headerColor: "white",
+    photoBorderColor: "#73448C"
+  },
+  pink: {
+    wrapperBackground: "#879CDF",
+    headerBackground: "#FF8374",
+    headerColor: "white",
+    photoBorderColor: "#FEE24C"
+  },
+  red: {
+    wrapperBackground: "#DE9967",
+    headerBackground: "#870603",
+    headerColor: "white",
+    photoBorderColor: "white"
+  }
 };
 
 
 const writeFileAsync = util.promisify(fs.writeFile);
 
 function promptUser() {
-    return inquirer.prompt([
-        {
-            type: "input",
-            name: "username",
-            message: "What is your GitHub name?"
-        },
-        {
-            type: "list",
-            name: "color",
-            choices: [
-                "green",
-                "blue",
-                "pink",
-                "red"
-            ],
-            message: "What is your Favorite Color?"
-        },
-    ]);
+  return inquirer.prompt([
+    {
+      type: "input",
+      name: "username",
+      message: "What is your GitHub name?"
+    },
+    {
+      type: "list",
+      name: "color",
+      choices: [
+        "green",
+        "blue",
+        "pink",
+        "red"
+      ],
+      message: "What is your Favorite Color?"
+    },
+  ]);
 }
 
 function generateHTML(data) {
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
       <html lang="en">
         <head>
             <meta charset="UTF-8" />
@@ -252,39 +252,39 @@ function generateHTML(data) {
 }
 
 async function init() {
-    try {
-        const answers = await promptUser();
+  try {
+    const answers = await promptUser();
 
-        const { username, color } = answers
+    const { username, color } = answers
 
-        const queryUrl = `https://api.github.com/users/${username}`;
+    const queryUrl = `https://api.github.com/users/${username}`;
 
-        const queryUrl2 = `https://api.github.com/users/${username}/repos`;
+    const queryUrl2 = `https://api.github.com/users/${username}/repos`;
 
-        const resRepos = await axios.get(queryUrl2)
-        
-        const repos = resRepos.data
+    const resRepos = await axios.get(queryUrl2)
 
-        let stars = 0;
+    const repos = resRepos.data
 
-        for (repo of repos) {
-          stars += repo.stargazers_count
-        }
-        
-        const res = await axios.get(queryUrl)
+    let stars = 0;
 
-        const results = res.data
-
-        const data = {stars, color, ...results}
-
-        const html = generateHTML(data);
-
-        await writeFileAsync("result.html", html);
-
-        console.log("Successfully made Profile");
-    } catch (err) {
-        console.log(err);
+    for (repo of repos) {
+      stars += repo.stargazers_count
     }
+
+    const res = await axios.get(queryUrl)
+
+    const results = res.data
+
+    const data = { stars, color, ...results }
+
+    const html = generateHTML(data);
+
+    await writeFileAsync("result.html", html);
+
+    console.log("Successfully made Profile");
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 init();
